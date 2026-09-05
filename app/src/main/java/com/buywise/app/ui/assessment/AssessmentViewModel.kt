@@ -3,6 +3,8 @@ package com.buywise.app.ui.assessment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.buywise.app.data.local.PreferencesManager
+import com.buywise.app.data.local.RecordStatus
+import com.buywise.app.data.repository.AssessmentRepository
 import com.buywise.app.domain.BuyWiseEngine
 import com.buywise.app.domain.model.AssessmentInput
 import com.buywise.app.domain.model.AssessmentResult
@@ -16,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 data class AssessmentUiState(
     val profile: FinanceProfile = FinanceProfile(),
@@ -51,7 +54,8 @@ data class AssessmentUiState(
 }
 
 class AssessmentViewModel(
-    private val preferencesManager: PreferencesManager
+    private val preferencesManager: PreferencesManager,
+    private val repository: AssessmentRepository
 ) : ViewModel() {
 
     private val state = MutableStateFlow(AssessmentUiState())
@@ -134,6 +138,29 @@ class AssessmentViewModel(
         calculate()
     }
 
+    // ---------- 保存记录 ----------
+
+    /** 把当前评估快照存入历史（toWatchlist = true 时进入观望清单），完成后回调 */
+    fun saveResult(toWatchlist: Boolean = false, onSaved: () -> Unit = {}) {
+        val current = state.value
+        val result = current.result ?: return
+
+        viewModelScope.launch {
+            repository.saveRecord(
+                result = result,
+                r = current.r,
+                e = current.e,
+                f = current.f,
+                resaleValue = current.resaleText.toDoubleOrNull() ?: 0.0,
+                estimatedUses = current.usesText.toDoubleOrNull() ?: 0.0,
+                annualUtilityValue = current.utilityText.toDoubleOrNull() ?: 0.0,
+                limitedTimeResult = current.limitedTimeResult,
+                status = if (toWatchlist) RecordStatus.WATCHLIST else RecordStatus.HISTORY
+            )
+            onSaved()
+        }
+    }
+
     // ---------- 第四步：限时决策协议 ----------
 
     fun onLimitedTimeToggle(value: Boolean) {
@@ -165,6 +192,8 @@ class AssessmentViewModel(
     }
 
     fun runLimitedTime() {
+        // 先补算基础评估，保证保存快照时 result 与 limitedTimeResult 同时存在
+        calculate()
         val current = state.value
         if (!current.canCalculate) return
 

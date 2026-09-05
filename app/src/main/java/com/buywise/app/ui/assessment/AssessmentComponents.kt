@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
@@ -159,7 +161,11 @@ private fun ProfileCell(modifier: Modifier, label: String, value: String) {
 }
 
 @Composable
-internal fun ResultCard(result: AssessmentResult) {
+internal fun ResultCard(
+    result: AssessmentResult,
+    onSaveToHistory: (() -> Unit)? = null,
+    onAddToWatchlist: (() -> Unit)? = null
+) {
     val isBuy = result.finalDecision == Decision.BUY
     val containerColor = when (result.finalDecision) {
         Decision.BUY -> MaterialTheme.colorScheme.primaryContainer
@@ -217,6 +223,30 @@ internal fun ResultCard(result: AssessmentResult) {
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.error
                 )
+            }
+
+            if (onSaveToHistory != null || onAddToWatchlist != null) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    if (onSaveToHistory != null) {
+                        OutlinedButton(
+                            onClick = onSaveToHistory,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("存入历史")
+                        }
+                    }
+                    if (onAddToWatchlist != null) {
+                        FilledTonalButton(
+                            onClick = onAddToWatchlist,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("加入观望清单")
+                        }
+                    }
+                }
             }
         }
     }

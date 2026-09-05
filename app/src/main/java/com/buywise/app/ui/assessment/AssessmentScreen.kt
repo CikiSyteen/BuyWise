@@ -16,8 +16,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import android.widget.Toast
 import com.buywise.app.domain.ScoreDescriptors
 import com.buywise.app.domain.model.Decision
 import com.buywise.app.ui.util.sanitizeDecimal
@@ -25,6 +27,7 @@ import com.buywise.app.ui.util.sanitizeDecimal
 @Composable
 fun AssessmentRoute(viewModel: AssessmentViewModel) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     AssessmentScreen(
         uiState = uiState,
         onItemNameChange = viewModel::onItemNameChange,
@@ -45,7 +48,17 @@ fun AssessmentRoute(viewModel: AssessmentViewModel) {
         onQ1Change = viewModel::onQ1Change,
         onQ2Change = viewModel::onQ2Change,
         onQ3Change = viewModel::onQ3Change,
-        onRunLimitedTime = viewModel::runLimitedTime
+        onRunLimitedTime = viewModel::runLimitedTime,
+        onSaveToHistory = {
+            viewModel.saveResult(toWatchlist = false) {
+                Toast.makeText(context, "已存入历史", Toast.LENGTH_SHORT).show()
+            }
+        },
+        onAddToWatchlist = {
+            viewModel.saveResult(toWatchlist = true) {
+                Toast.makeText(context, "已加入观望清单", Toast.LENGTH_SHORT).show()
+            }
+        }
     )
 }
 
@@ -71,6 +84,8 @@ fun AssessmentScreen(
     onQ2Change: (Boolean) -> Unit,
     onQ3Change: (Boolean) -> Unit,
     onRunLimitedTime: () -> Unit,
+    onSaveToHistory: () -> Unit,
+    onAddToWatchlist: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -153,7 +168,12 @@ fun AssessmentScreen(
 
         // ---- 结果 ----
         uiState.result?.let { result ->
-            ResultCard(result = result)
+            ResultCard(
+                result = result,
+                onSaveToHistory = onSaveToHistory,
+                onAddToWatchlist =
+                    if (result.finalDecision == Decision.GIVE_UP) onAddToWatchlist else null
+            )
 
             if (result.baseDecision == Decision.REFINE && result.refineDetail != null) {
                 RefineCard(
