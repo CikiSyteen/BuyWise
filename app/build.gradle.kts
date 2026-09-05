@@ -25,6 +25,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // CI 打包的 release APK 需要签名才能安装；正式发布前换成专用 keystore
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
