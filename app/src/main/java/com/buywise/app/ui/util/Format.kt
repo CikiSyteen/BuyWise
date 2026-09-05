@@ -1,10 +1,16 @@
 package com.buywise.app.ui.util
 
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 /** 金额格式化：1234.5 -> 1,234.50 */
 fun formatMoney(value: Double): String =
     String.format(Locale.CHINA, "%,.2f", value)
+
+/** 时间戳格式化：1728000000000 -> 2026-09-04 16:21 */
+fun formatDateTime(millis: Long): String =
+    SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA).format(Date(millis))
 
 /** 数字格式化：整数不带小数点 */
 fun formatNumber(value: Double): String =
