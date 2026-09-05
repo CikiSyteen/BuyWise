@@ -13,6 +13,7 @@ captures/
 
 # AI 工具本地记忆（不含项目源码）
 .codebuddy/
+.zcode/
 
 # 系统文件
 .DS_Store

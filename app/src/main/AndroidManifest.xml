@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!--
-        注意：未引用 @mipmap/ic_launcher，因为纯手工脚手架没有图标资源。
-        后续可用 Android Studio 的 Image Asset Studio 生成图标后再补上 android:icon / android:roundIcon。
-    -->
-
     <application
         android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.BuyWise">
