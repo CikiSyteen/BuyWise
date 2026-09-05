@@ -1,0 +1,19 @@
+# Gradle
+.gradle/
+build/
+app/build/
+
+# Android Studio / IDE
+.idea/
+*.iml
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+
+# AI 工具本地记忆（不含项目源码）
+.codebuddy/
+
+# 系统文件
+.DS_Store
+Thumbs.db

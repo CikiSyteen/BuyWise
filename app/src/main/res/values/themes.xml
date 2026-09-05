@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        使用平台 Material 主题作为父主题，无需额外引入 AppCompat / Material Components 库。
+        minSdk 26 > 21，因此 android:Theme.Material.* 可用。
+    -->
+    <style name="Theme.BuyWise" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>
